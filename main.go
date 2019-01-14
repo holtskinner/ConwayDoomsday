@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 // Weekday Day of the Week (int)
 type Weekday int
@@ -24,30 +27,62 @@ var doomsdays = [12]int{3, 28, 14, 4, 9, 6, 11, 8, 5, 10, 7, 12}
 
 func main() {
 
-	var month, day, year int
+	// var month, day, year int
 
-	for month < 1 || month > 12 {
-		fmt.Printf("Enter the Month: ")
-		fmt.Scanln(&month)
+	// for month < 1 || month > 12 {
+	// 	fmt.Printf("Enter the Month: ")
+	// 	fmt.Scanln(&month)
+	// }
+
+	// // TODO: More error checking
+	// for day < 1 || day > 31 {
+	// 	fmt.Printf("Enter the Day: ")
+	// 	fmt.Scanln(&day)
+	// }
+
+	// // Gregorian Calendar released in 1582, 3000 arbitrary
+	// for year < 1582 || year > 2700 {
+	// 	fmt.Printf("Enter the year: ")
+	// 	fmt.Scanln(&year)
+	// }
+
+	start := time.Now()
+
+	for i := 0; i < 1000; i++ {
+		for y := 1582; y < 2700; y++ {
+			for m := 1; m <= 12; m++ {
+				for d := 1; d <= 28; d++ {
+
+					doomsday(m, d, y)
+				}
+			}
+		}
 	}
 
-	// TODO: More error checking
-	for day < 1 || day > 31 {
-		fmt.Printf("Enter the Day: ")
-		fmt.Scanln(&day)
-	}
+	elapsed := time.Since(start)
 
-	// Gregorian Calendar released in 1582, 3000 arbitrary
-	for year < 1582 || year > 2700 {
-		fmt.Printf("Enter the year: ")
-		fmt.Scanln(&year)
-	}
-
-	fmt.Println(doomsday(month, day, year))
+	fmt.Println(elapsed)
 
 }
 
-// Conway's Doomsday Algorithm
+// Mathematical Equivelent
+func fastDoomsday(month, day, year int) Weekday {
+
+	d := 2 + year + (year / 4) - (year / 100) + (year / 400)
+	// leapyear
+	var l int
+
+	if (month == 1 || month == 2) && (year%4 == 0 && year%400 != 0) {
+		l = 1
+	}
+
+	h := (day - doomsdays[month-1] - l + d) % 7
+
+	return Weekday(h)
+
+}
+
+// Conway's Original Doomsday Algorithm
 func doomsday(month, day, year int) Weekday {
 
 	var i int
@@ -81,10 +116,8 @@ func doomsday(month, day, year int) Weekday {
 	// leapyear
 	var l int
 
-	if month == 1 || month == 2 {
-		if (year%4 == 0) && (year%400 != 0) {
-			l = 1
-		}
+	if (month == 1 || month == 2) && (year%4 == 0 && year%400 != 0) {
+		l = 1
 	}
 
 	h := (day - doomsdays[month-1] - l + d) % 7
